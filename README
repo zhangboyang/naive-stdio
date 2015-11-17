@@ -1,0 +1,12 @@
+# naive-stdio
+a small and naive buffer-based input and output library
+
+一个十分简单的使用数组进行输入输出的函数集
+(可以用于自动生成 NEMU 的测试样例)
+
+仅支持 %d %lld %c %s 控制符，不支持高级格式化功能
+
+函数：
+    naive_scanf(): 实现十分简单的 scanf() 功能
+    naive_printf(): 实现十分简单的 printf() 功能
+
