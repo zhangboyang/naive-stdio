@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "naive-stdio.h"
 
 int naive_strlen(const char *s)
@@ -29,7 +30,7 @@ void naive_memset(void *p, char c, int n)
 }
 
 
-char input_buffer[] = " 123dasf 1234567890123456789";
+char input_buffer[] = " -214 7482648asdfdasdasf -9223372036854775808 1234567890123456789";
 char output_buffer[128];
 
 int main()

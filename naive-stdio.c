@@ -49,11 +49,13 @@ int write_llint(long long lld)
 {
     char buf[100];
     int p = 0, ret;
+    unsigned long long llu;
     if (lld < 0) { write_char('-'); lld = -lld; }
+    llu = lld;
     do {
-        buf[p++] = lld % 10;
-        lld /= 10;
-    } while (lld > 0);
+        buf[p++] = llu % 10;
+        llu /= 10;
+    } while (llu > 0);
     ret = p;
     while (p > 0) write_char('0' + buf[--p]);
     return ret;
@@ -61,7 +63,18 @@ int write_llint(long long lld)
 
 int write_int(int d)
 {
-    return write_llint(d);
+    char buf[100];
+    int p = 0, ret;
+    unsigned int u;
+    if (d < 0) { write_char('-'); d = -d; }
+    u = d;
+    do {
+        buf[p++] = u % 10;
+        u /= 10;
+    } while (u > 0);
+    ret = p;
+    while (p > 0) write_char('0' + buf[--p]);
+    return ret;
 }
 
 int naive_printf(const char *fmt, ...)
@@ -154,23 +167,37 @@ int read_llint(long long *lldp)
 {
     int flag = 0;
     long long lld = 0;
+    int f = 0;
     char c;
     read_space();
+    read_char(&c);
+    if (c == '-') f = 1; else unread_char(c);
     while (read_char(&c) && naive_isdigit(c)) {
         lld = lld * 10 + (c - '0');
         flag = 1;
     }
     unread_char(c);
-    if (flag) *lldp = lld;
+    if (flag) *lldp = f ? -lld : lld;
+    if (!flag && f) unread_char('-');
     return flag;
 }
 
 int read_int(int *dp)
 {
-    int flag;
-    long long lld;
-    flag = read_llint(&lld);
-    if (flag) *dp = lld;
+    int flag = 0;
+    int d = 0;
+    int f = 0;
+    char c;
+    read_space();
+    read_char(&c);
+    if (c == '-') f = 1; else unread_char(c);
+    while (read_char(&c) && naive_isdigit(c)) {
+        d = d * 10 + (c - '0');
+        flag = 1;
+    }
+    unread_char(c);
+    if (flag) *dp = f ? -d : d;
+    if (!flag && f) unread_char('-');
     return flag;
 }
 
@@ -181,6 +208,7 @@ int naive_scanf(const char *fmt, ...)
     int *dp;
     char c, *cp, *s;
     int cnt = 0;
+    int flag = 0;
     
     va_start(ap, fmt);
     while (*fmt) {
@@ -188,31 +216,32 @@ int naive_scanf(const char *fmt, ...)
             switch (*++fmt) {
                 case 's':
                     s = va_arg(ap, char *);
-                    cnt += read_string(s);
+                    cnt += flag = read_string(s);
                     break;
                 case 'd':
                     dp = va_arg(ap, int *);
-                    cnt += read_int(dp);
+                    cnt += flag = read_int(dp);
                     break;
                 case 'c':
                     cp = va_arg(ap, char *);
-                    cnt += read_char(cp);
+                    cnt += flag = read_char(cp);
                     break;
                 case 'l':
                     if (*++fmt == 'l' && *++fmt == 'd') {
                         lldp = va_arg(ap, long long *);
-                        cnt += read_llint(lldp);
+                        cnt += flag = read_llint(lldp);
                     }
                     break;
                 case '%':
                     read_char(&c);
-                    if (c != '%') { unread_char(c); goto done; }
+                    flag = (c == '%');
                     break;
             }
         } else {
             read_char(&c);
-            if (c != *fmt) { unread_char(c); goto done; }
+            flag = (c == *fmt);
         }
+        if (!flag) goto done;
         fmt++;
     }
 done:
