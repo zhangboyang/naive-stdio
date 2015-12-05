@@ -4,9 +4,10 @@ a small and naive buffer-based input and output library
 一个十分简单的使用数组进行输入输出的函数集
 实现了使用数组作为输入输出的 naive_scanf() 和 naive_printf()
 
+注意：
 仅支持 %d %lld %c %s 控制符，不支持高级格式化功能
-
-另外，naive_scanf() 对于格式串中的空白符处理方式与标准的 scanf() 不同，
+naive_scanf() 不能读取以 +(正号) 开头的整数
+naive_scanf() 对于格式串中的空白符处理方式与标准的 scanf() 不同，
 它会像对待普通字符一样地对待格式串中的空白符。（标准做法是，空白符会匹配零个或多个任意空白符）
 
 函数：
